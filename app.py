@@ -150,10 +150,14 @@ def handle_location_message(event):
 
     #lat = [25.058360]
     #lng = [121.445734]
+    lat2 = list()
+    lat2.append(lat)
+    lng2 = list()
+    lng2.append(long)
 
     dict = {
-        "WGS84經度": long,
-        "WGS84緯度": lat
+        "WGS84經度": lng2,
+        "WGS84緯度": lat2
     }
 
     dict_df = pd.DataFrame(dict)

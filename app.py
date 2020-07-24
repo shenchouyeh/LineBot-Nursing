@@ -179,7 +179,7 @@ def handle_location_message(event):
     alt_text=restaurant["name"],
     template=ButtonsTemplate(
             thumbnail_image_url=thumbnail_image_url,
-            title=restaurant["name"],
+            title=result["機構名稱"],
             text=details,
             actions=[
                 URITemplateAction(

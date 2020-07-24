@@ -111,31 +111,62 @@ def handle_location_message(event):
     long = event.message.longitude
     
     # 使用 Google API Start =========
-    # 1. 搜尋附近餐廳
-    nearby_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={}&location={},{}&rankby=distance&type=restaurant&language=zh-TW".format(GOOGLE_API_KEY, lat, long)
-    nearby_results = requests.get(nearby_url)
-    # 2. 得到最近的20間餐廳
-    nearby_restaurants_dict = nearby_results.json()
-    top20_restaurants = nearby_restaurants_dict["results"]
-    # 3. 隨機選擇一間餐廳
-    restaurant = random.choice(top20_restaurants)
-    # 4. 檢查餐廳有沒有照片，有的話會顯示
-    if restaurant.get("photos") is None:
-        thumbnail_image_url = None
-    else:
-        # 根據文件，最多只會有一張照片
-        photo_reference = restaurant["photos"][0]["photo_reference"]
-        thumbnail_image_url = "https://maps.googleapis.com/maps/api/place/photo?key={}&photoreference={}&maxwidth=1024".format(GOOGLE_API_KEY, photo_reference)
-    # 5. 組裝餐廳詳細資訊
-    rating = "無" if restaurant.get("rating") is None else restaurant["rating"]
-    address = "沒有資料" if restaurant.get("vicinity") is None else restaurant["vicinity"]
-    details = "評分：{}\n地址：{}".format(rating, address)
+    # 1. 取得最近居護機構
+    from math import cos, asin, sqrt
+    def distance(lat1, lon1, lat2, lon2):
+        p = 0.017453292519943295  #Pi/180
+        a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
+        return 12742 * asin(sqrt(a)) #2*R*asin..
 
-    # 6. 取得餐廳的 Google map 網址
+    def closest(data, zipcode):
+        dl = []
+        for p in data:
+            ap = {
+            '縣市別': zipcode['縣市別'],
+            '機構類型': zipcode['機構類型'],
+            '機構代碼': zipcode['機構代碼'],
+            '機構名稱': zipcode['機構名稱'],
+            '地址': zipcode['地址'],
+            '電話': zipcode['電話'],
+            '定位地址': zipcode['定位地址'],
+            'WGS84經度': p['WGS84經度'],
+            'WGS84緯度': p['WGS84緯度'],
+            'a': zipcode['WGS84經度'],
+            'b': zipcode['WGS84緯度'],
+            '距離': distance(zipcode['WGS84經度'],zipcode['WGS84緯度'],p['WGS84經度'],p['WGS84緯度'])
+            }
+            dl.append(ap)
+        dl_sorted = sorted(dl, key=lambda k: k['距離'])
+        return dl_sorted[0]
+
+    def calculateNearestOne(dict_df2):
+        dicts = []
+        for zc in df:
+            dicts.append(closest(dict_df2, zc))
+   
+        dl_sorted = sorted(dicts, key=lambda k: k['距離'])
+        return dl_sorted[0]
+
+
+    #lat = [25.058360]
+    #lng = [121.445734]
+
+    dict = {
+        "WGS84經度": long,
+        "WGS84緯度": lat
+    }
+
+    dict_df = pd.DataFrame(dict)
+    dict_df = dict_df.to_dict('records')
+
+    result = calculateNearestOne(dict_df)
+
+
+    # 6. 取得機構的 Google map 網址
     map_url = "https://www.google.com/maps/search/?api=1&query={lat},{long}&query_place_id={place_id}".format(
-        lat=restaurant["geometry"]["location"]["lat"],
-        long=restaurant["geometry"]["location"]["lng"],
-        place_id=restaurant["place_id"]
+        lat=result["WGS84緯度"],
+        long=result["WGS84經度"],
+        place_id=result["機構名稱"]
     )
     # 使用 Google API End =========
     

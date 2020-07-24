@@ -176,7 +176,7 @@ def handle_location_message(event):
     
     # 回覆使用 Buttons Template
     buttons_template_message = TemplateSendMessage(
-    alt_text=restaurant["name"],
+    alt_text=result["機構名稱"],
     template=ButtonsTemplate(
             thumbnail_image_url=thumbnail_image_url,
             title=result["機構名稱"],

@@ -164,7 +164,8 @@ def handle_location_message(event):
     dict_df = dict_df.to_dict('records')
 
     result = calculateNearestOne(dict_df)
-
+    
+    details = "機構代碼：{}\n機構名稱：{}\n電話：{}\n地址：{}".format(result['機構代碼'],result['機構名稱'],result['電話'], result['地址']) 
 
     # 6. 取得機構的 Google map 網址
     map_url = "https://www.google.com/maps/search/?api=1&query={lat},{long}&query_place_id={place_id}".format(

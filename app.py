@@ -164,13 +164,14 @@ def handle_location_message(event):
     dict_df = dict_df.to_dict('records')
 
     result = calculateNearestOne(dict_df)
-    
-    details = "機構名稱：{}\n電話：{}".format(result['機構名稱'],result['電話']) 
-    
+   
     the_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key={}&input={}&inputtype=textquery&fields=photos,rating".format(GOOGLE_API_KEY, result['機構名稱'])
     the_results = requests.get(the_url)
     the_restaurants_dict = the_results.json()
     restaurant = the_restaurants_dict["candidates"][0]
+    
+    rating = "無" if restaurant.get("rating") is None else restaurant["rating"]
+    details = "機構名稱：{}\n評分：{}\n電話：{}".format(result['機構名稱'],rating,result['電話']) 
 
     if restaurant.get("photos") is None:
         thumbnail_image_url = None

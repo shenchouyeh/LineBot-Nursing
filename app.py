@@ -178,7 +178,7 @@ def handle_location_message(event):
     buttons_template_message = TemplateSendMessage(
     alt_text=result["機構名稱"],
     template=ButtonsTemplate(
-            thumbnail_image_url = NONE,
+            thumbnail_image_url = None,
             title=result["機構名稱"],
             text=details,
             actions=[

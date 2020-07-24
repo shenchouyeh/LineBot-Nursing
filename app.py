@@ -26,6 +26,31 @@ GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 
+# ================= 抓Opendata =================
+import pandas as pd
+
+def download():
+    import csv
+    import requests
+    CSV_URL = 'https://quality.data.gov.tw/dq_download_csv.php?nid=115950&md5_url=ee25ae45fd566bcb8c4c22a915f169a8'
+    with requests.Session() as s:
+        download = s.get(CSV_URL).text
+        df = pd.read_csv(CSV_URL)
+        return df
+
+import time
+from datetime import datetime
+#----------- 每10分鐘抓一次
+#while True:
+    #download()
+    #print("Dowloaded at:",str(datetime.now()))
+    #time.sleep(10*60)
+
+#------------ 只抓一次
+df = download().to_dict('records')
+
+
+# ================= Home =================
 @app.route('/')
 def index():
     return "<p>Hello World!</p>"
@@ -53,10 +78,10 @@ def handle_text_message(event):                  # default
     msg = event.message.text # message from user
     uid = event.source.user_id # user id
  
-    user_intent = "WhatToEatForLunch"
+    user_intent = "FindNursing"
 
     # 3. 根據使用者的意圖做相對應的回答
-    if user_intent == "WhatToEatForLunch": # 當使用者意圖為詢問午餐時
+    if user_intent == "FindNursing": # 當使用者意圖為詢問午餐時
         # 建立一個 button 的 template
         buttons_template_message = TemplateSendMessage(
             alt_text="請告訴我你在哪兒",

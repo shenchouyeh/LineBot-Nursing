@@ -77,6 +77,9 @@ def callback():
 def handle_text_message(event):                  # default
     msg = event.message.text # message from user
     uid = event.source.user_id # user id
+    
+    if msg != "@找機構": 
+        return
  
     user_intent = "FindNursing"
 

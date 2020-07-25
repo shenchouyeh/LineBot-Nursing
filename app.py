@@ -94,7 +94,7 @@ def handle_text_message(event):                  # default
                     URITemplateAction(
                         label="傳送我的位置訊息",
                         #uri="line://nv/location"
-                        uri="https://line.me/R/nv/location/"
+                        url="https://google.com"
                     )
                 ]
             )

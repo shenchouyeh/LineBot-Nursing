@@ -93,7 +93,8 @@ def handle_text_message(event):                  # default
                 actions=[
                     URITemplateAction(
                         label="傳送我的位置訊息",
-                        uri="line://nv/location"
+                        #uri="line://nv/location"
+                        uri="https://line.me/R/nv/location/"
                     )
                 ]
             )
